@@ -8,12 +8,21 @@ import leaveRoutes from "./routes/leave.routes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
-const FRONTEND_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
+const RAW_ORIGINS = process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || "http://localhost:5173";
+const ALLOWED_ORIGINS = RAW_ORIGINS.split(",")
+  .map((s) => s.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
 const app = express();
 
 app.use(
   cors({
-    origin: FRONTEND_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Non-browser or same-origin
+      const normalized = origin.replace(/\/$/, "");
+      if (ALLOWED_ORIGINS.includes(normalized)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"), false);
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
