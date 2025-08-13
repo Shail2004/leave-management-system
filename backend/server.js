@@ -8,12 +8,12 @@ import leaveRoutes from "./routes/leave.routes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
-
+const FRONTEND_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FRONTEND_ORIGIN,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
